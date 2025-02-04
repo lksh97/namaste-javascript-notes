@@ -1,4 +1,4 @@
-# Episode 8 : let & const in JS, Temporal Dead Zone
+ # Episode 8 : let & const in JS, Temporal Dead Zone
 
 * let and const declarations are hoisted. But its different from **var**
     ```js
@@ -11,13 +11,17 @@
     console.log(window.b); // 15
     ```
   It looks like let isn't hoisted, **but it is**, let's understand
-  * Both a and b are actually initialized as *undefined* in hoisting stage. But var **b** is inside the storage space of GLOBAL, and **a** is in a separate memory object called script, where it can be accessed only after assigning some value to it first ie. one can access 'a' only if it is assigned. Thus, it throws error.
+  * Both a and b are actually initialized as *undefined* in hoisting stage. But var **b** is inside the `storage space of GLOBAL`, and **a** is in a `separate memory object called script`, <ins>where it can be accessed only after assigning some value to it first ie. one can access 'a' only if it is assigned</ins>. Thus, it throws error.
 
 <br>
 
-* **Temporal Dead Zone** : Time since when the let variable was hoisted until it is initialized some value. 
+* **Temporal Dead Zone** : Time since when the let variable was hoisted(lecture - 3) until it is initialized some value. 
     - So any line till before "let a = 10" is the TDZ for a
-    - Since a is not accessible on global, its not accessible in *window/this* also. window.b or this.b -> 15; But window.a or this.a ->undefined, just like window.x->undefined (x isn't declared anywhere)
+        
+        - Since a is not accessible on global, its `not accessible in window/this` also.
+            - window.b or this.b -> 15; 
+            - But window.a or this.a ->undefined,
+                - just like window.x->undefined (x isn't declared anywhere, but error msg will be different)
 
 * **Reference Error** are thrown when variables are in temporal dead zone.
 
@@ -50,23 +54,48 @@
     * Uncaught ReferenceError: x is not defined at ...
         * This Error signifies that x has never been in the scope of the program. This literally means that x was never defined/declared and is being tried to be accesed.
 
+        ```js
+        console.log(x); // Throws an error because 'x' is not defined
+        ```
+
     * Uncaught ReferenceError: cannot access 'a' before initialization
         * This Error signifies that 'a' cannot be accessed because it is declared as 'let' and since it is not assigned a value, it is its Temporal Dead Zone. Thus, this error occurs.
 
+        ```js
+        console.log(a); // Throws an error because 'a' is accessed before initialization
+        
+        let a = 10;
+        ```
     * Uncaught SyntaxError: Identifier 'a' has already been declared
         * This Error signifies that we are redeclaring a variable that is 'let' declared. No execution will take place.
+
+        ```js
+        let a = 5;
+        
+        let a = 10; // Throws an error because 'a' has already been declared
+        ```
 
     * Uncaught SyntaxError: Missing initializer in const declaration
         * This Error signifies that we haven't initialized or assigned value to a const declaration.
 
+        ```js
+        const pi; // Throws an error because 'pi' is missing an initializer
+        ```
+
     * Uncaught TypeError: Assignment to constant variable
         * This Error signifies that we are reassigning to a const variable.
+
+        ```js
+        const pi = 3.14;
+        pi = 3.14159; // Throws an error because 'pi' is a constant variable
+        ```
 
 ### SOME GOOD PRACTICES:
 
 * Try using const wherever possible.
 * If not, use let, Avoid var.
 * Declare and initialize all variables with let to the top to avoid errors to shrink temporal dead zone window to zero.
+    * Use var only when you are left with no other choice.
 
 <hr>
 

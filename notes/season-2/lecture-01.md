@@ -1,3 +1,181 @@
+
+# Episode 20: Callback Functions in JavaScript
+
+## Understanding Callback Functions
+
+### What is a Callback Function?
+
+A callback function is simply a function that you pass as an argument to another function, and it gets executed after the completion of that function. 
+
+Imagine you have a task that you need someone else to finish before you can continue with your work. You give them instructions (the callback function), and once they’re done, they follow your instructions to finish the job.
+
+### Simple Example
+
+Let's start with a simple example to demonstrate how a callback works:
+
+```javascript
+function greet(name) {
+    console.log("Hello " + name);
+}
+
+function sayGoodbye(name) {
+    console.log("Goodbye " + name);
+}
+
+function performAction(action, name) {
+    action(name); // Here, the `action` is the callback function that gets executed.
+}
+
+performAction(greet, "Alice");    // Output: Hello Alice
+performAction(sayGoodbye, "Bob"); // Output: Goodbye Bob
+```
+
+In the above code:
+- `greet` and `sayGoodbye` are two simple functions.
+- `performAction` is a higher-order function that accepts another function (`action`) as an argument and executes it.
+- We pass `greet` and `sayGoodbye` as callbacks to `performAction`, which then executes them.
+
+### The Good Part of Callbacks
+
+Callbacks are super important when writing asynchronous code in JavaScript. 
+
+**Asynchronous** means that something happens in the background and doesn't block the rest of your code from running. For example, if you’re waiting for a response from a server, you can use a callback function to execute some code only after you get the response.
+
+### The Bad Part of Callbacks
+
+However, using callbacks can lead to issues like:
+
+1. **Callback Hell**: When you have multiple nested callbacks, making the code hard to read and maintain.
+2. **Inversion of Control**: When you give up control of your code to another function, which can be risky.
+
+### JavaScript: A Synchronous Language
+
+JavaScript is a **synchronous** and **single-threaded** language. This means it can only do one thing at a time, in the order that you write it. Think of it like a single-person assembly line: they pick up one item, work on it, finish it, and then move on to the next one.
+
+```javascript
+console.log("Hello");
+console.log("World");
+console.log("!");
+
+// Output:
+// Hello
+// World
+// !
+```
+
+JavaScript quickly prints each line because it doesn’t wait for anything—it just moves to the next line immediately.
+
+### Introducing Asynchronous Behavior with Callbacks
+
+But what if you want to delay something? You can use a callback function to do that.
+
+```javascript
+console.log("Hello");
+
+setTimeout(function () {
+  console.log("World");
+}, 2000); // 2000 milliseconds = 2 seconds
+
+console.log("!");
+
+// Output:
+// Hello
+// !
+// World (after 2 seconds)
+```
+
+Here, `setTimeout` is a function that waits for 2 seconds before running the callback function inside it. So, "World" is printed last, even though it’s written second in the code.
+
+---
+
+## A Real-World Example: e-Commerce Website
+
+Imagine you’re buying something online, like shoes and a shirt. When you place an order, the following steps might happen:
+
+1. **Create the Order**: The order is created in the system.
+2. **Proceed to Payment**: You’re charged for the order.
+
+Here’s how you might write this in JavaScript:
+
+```javascript
+const cart = ["shoes", "shirt"];
+
+// Step 1: Create Order
+api.createOrder(cart);
+
+// Step 2: Proceed to Payment
+api.proceedToPayment();
+```
+
+But what if creating the order takes some time (e.g., it needs to talk to a server)? You want to make sure the order is created before moving on to payment.
+
+This is where callbacks can help:
+
+```javascript
+api.createOrder(cart, function () {
+  api.proceedToPayment();
+});
+```
+
+Here, the `createOrder` function is passed a callback function—`api.proceedToPayment()`—which will only run after the order is successfully created.
+
+### Complicating the Scenario
+
+Now, let’s make it more complex. After payment, you want to show the user their order summary:
+
+```javascript
+api.createOrder(cart, function () {
+  api.proceedToPayment(function () {
+    api.showOrderSummary();
+  });
+});
+```
+
+And let’s say you also want to update the user’s wallet balance after showing the order summary:
+
+```javascript
+api.createOrder(cart, function () {
+  api.proceedToPayment(function () {
+    api.showOrderSummary(function () {
+      api.updateWallet();
+    });
+  });
+});
+```
+
+This pattern, where callbacks are nested within other callbacks, is called **Callback Hell**. The code becomes difficult to read and maintain, and it’s easy to make mistakes. It’s also known as the **Pyramid of Doom** because of how the code structure looks.
+
+---
+
+## Inversion of Control: The Risk with Callbacks
+
+When using callbacks, you’re handing control of your code to another function, which can be risky. 
+
+### What is Inversion of Control?
+
+**Inversion of Control** happens when you give control of your function (e.g., when and how it runs) to another function, which can lead to unexpected behavior.
+
+```javascript
+api.createOrder(cart, function () {
+  api.proceedToPayment();
+});
+```
+
+In this example, you’re trusting that `api.createOrder` will correctly call `api.proceedToPayment()` when it’s done. But what if it doesn’t? What if it calls it twice, or not at all? This can lead to bugs that are hard to find and fix.
+
+---
+
+## Summary
+
+- **Callbacks** are essential for handling asynchronous tasks in JavaScript, but they come with challenges like **Callback Hell** and **Inversion of Control**.
+- Understanding these challenges is crucial for learning about **Promises**, which we’ll cover in the next session as a solution to these problems.
+
+---
+
+By understanding these concepts and examples, you’ll be better equipped to handle asynchronous code in JavaScript, especially as you move on to more advanced topics like Promises and async/await.
+
+----
+
 # Episode 20 : Callback
 
 - There are 2 Parts of Callback:

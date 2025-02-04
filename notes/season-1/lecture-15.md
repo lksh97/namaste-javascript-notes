@@ -13,7 +13,7 @@ None of the below are part of Javascript! These are extra superpowers that brows
 
 * setTimeout(), DOM APIs, fetch(), localstorage, console (yes, even console.log is not JS!!), location and so many more.
     * setTimeout() : Timer function
-    * DOM APIs : eg.Document.xxxx ; Used to access HTML DOM tree. (Document Object Manipulation)
+    * DOM APIs : eg.Document.xxxx ; Used to access HTML DOM tree. (Document Object Manipulation
     * fetch() : Used to make connection with external servers eg. Netflix servers etc.
 
 * We get all these inside call stack through global object ie. window

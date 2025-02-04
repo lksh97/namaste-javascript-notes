@@ -6,76 +6,100 @@
 ```js
 // CASE 1
 function a() {
+
     console.log(b); // 10
-    // Instead of printing undefined it prints 10, So somehow this a function could access the variable b outside the function scope. 
+    // Instead of printing undefined it prints 10, So somehow this a function could access the variable b outside the function scope.
+
 }
+
 var b = 10;
+
 a();
 ```
+- In **case 1**: function a is able to access variable b from Global scope.
 
 ```js
 // CASE 2
 function a() {
+
     c();
+
     function c() {
         console.log(b); // 10
     }
 }
+
 var b = 10;
+
 a();
 ```
+- In **case 2**: 10 is printed. It means that within nested function too, the global scope variable can be accessed.
 
 ```js
 // CASE 3
 function a() {
+
     c();
+
     function c() {
         var b = 100;
         console.log(b); // 100
     }
 }
+
 var b = 10;
 a();
 ```
+- In **case 3**: 100 is printed meaning local variable of the same name took precedence over a global variable.
 
 ```js
 // CASE 4
 function a() {
+
     var b = 10;
     c();
+
     function c() {
         console.log(b); // 10
     }
 }
+
 a();
+
 console.log(b); // Error, Not Defined
 ```
+- In **case 4**: A function can access a global variable, but the global execution context can't access any local variable.
 
-* Let's try to understand the output in each of the cases above.
-  * In **case 1**: function a is able to access variable b from Global scope.
-  * In **case 2**: 10 is printed. It means that within nested function too, the global scope variable can be accessed.
-  * In **case 3**: 100 is printed meaning local variable of the same name took precedence over a global variable.
-  * In **case 4**: A function can access a global variable, but the global execution context can't access any local variable.
-    ```
-    To summarize the above points in terms of execution context:
-    call_stack = [GEC, a(), c()]
-    Now lets also assign the memory sections of each execution context in call_stack.
-    c() = [[lexical environment pointer pointing to a()]]
-    a() = [b:10, c:{}, [lexical environment pointer pointing to GEC]]
-    GEC =  [a:{},[lexical_environment pointer pointing to null]]
-    ```
-    ![Lexical Scope Explaination](/assets/lexical.jpg "Lexical Scope")
-    ![Lexical Scope Explaination](/assets/lexical2.jpg "Lexical Scope")
+```
+To summarize the above points in terms of execution context:
+
+- call_stack = [GEC, a(), c()]
+
+- Now lets also assign the memory sections of each execution context in call_stack.
+
+c() = [[`lexical environment pointer` pointing to a()]]
+
+a() = [b:10, c:{}, [lexical environment pointer pointing to GEC]]
+
+GEC =  [a:{},[lexical_environment pointer pointing to null]]
+``` 
+
+![Lexical Scope Explaination](/assets/lexical.jpg "Lexical Scope")
+
+![Lexical Scope Explaination](/assets/lexical2.jpg "Lexical Scope")
 
 <br>
 
-* So, **Lexical Environment** = local memory + lexical env of its parent. Hence, Lexical Environement is the local memory along with the lexical environment of its parent
+**Question - What is Lexical Enviroment?**
+* **Ans -** For a moment think of it as a local memory.
+- Actually **Lexical Environment**   = local memory + lexical env of its parent.  Hence, Lexical Enviroment is the local memory along with the lexical environment of its parent
 
-* **Lexical**: In hierarchy, In order
+* **Lexical**: In hierarchy, sequence or order. So in CASE 4, c() function is lexicially/physically  (sitting) inside a() function - in order/hierarchy .
 
 * Whenever an Execution Context is created, a Lexical environment(LE) is also created and is referenced in the local Execution Context(in memory space).
 
-* The process of going one by one to parent and checking for values is called scope chain or Lexcial environment chain.
+* The process of going one by one to parent and checking for values (until it does not find the variable )is called scope chain or Lexcial environment chain.
+    - If scope chain is exhausted we still not find the variable we call it that mean  is not in scope  
 
 * ```js
   function a() {

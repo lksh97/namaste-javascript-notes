@@ -23,12 +23,13 @@
 * Q: Print 1 after 1 sec, 2 after 2 sec till 5 : Tricky interview question
  
     We assume this has a simple approach as below
+    
     ```js
     function x() {
-    for(var i = 1; i<=5; i++){
-        setTimeout(function() {
-        console.log(i);
-        }, i*1000);
+        for(var i = 1; i<=5; i++){
+            setTimeout(function() {
+            console.log(i);
+            }, i*1000);
         }
         console.log("Namaste Javascript");
     }

@@ -1,3 +1,234 @@
+A Promise is an object which represents eventual completion or failure of an asynchronous operation. Promises are immutable once resolved and they give us a lot of control over our code. 
+
+They have three state 
+1) pending
+2) fulfilled or rejected. 
+
+The promise object contains two parts
+ 1) PromiseState(stores the sate of the prmise)
+ 2) PromiseResult(stores data)
+
+---
+
+## What are Asynchronous Operations?
+
+### Definition
+**Asynchronous operations** allow your program to handle long-running tasks (like fetching data from a server) without blocking the main thread. This means your program can continue executing other tasks while waiting for the asynchronous operation to complete.
+
+### Real-World Analogy
+Imagine you're ordering food at a restaurant. After placing your order, you don't just stand by the kitchen waiting for the food to be ready. Instead, you might chat with friends, check your phone, or do other things while the kitchen prepares your meal. Once the meal is ready, the waiter serves it to you.
+
+Similarly, in JavaScript, while an asynchronous operation (like fetching data) is happening in the background, your program can continue to perform other tasks.
+
+### Synchronous vs. Asynchronous Operations
+
+- **Synchronous**: Operations are executed one after the other. Each operation waits for the previous one to complete.
+  - Example: Cooking one dish at a time, finishing each before starting the next.
+  
+- **Asynchronous**: Operations can be initiated and then left to complete while other operations are carried out.
+  - Example: Starting to cook several dishes simultaneously, and each is finished when it's ready.
+
+### Diagram: Synchronous vs. Asynchronous
+
+```plaintext
+Synchronous:           Asynchronous:
+Task 1                 Task 1 ----> (initiated)
+   |                     |         
+Task 2                 Task 2 (while Task 1 is still running)
+   |                     |
+Task 3                 Task 3 (while Task 1 is still running)
+   |                     |
+...                   Task 1 completes (eventually)
+```
+
+### Example: Synchronous Code
+
+```javascript
+console.log("Start cooking");
+console.log("Cooking dish 1...");
+console.log("Dish 1 done!");
+console.log("Cooking dish 2...");
+console.log("Dish 2 done!");
+console.log("Cooking dish 3...");
+console.log("Dish 3 done!");
+console.log("All dishes done!");
+```
+
+### Example: Asynchronous Code
+
+```javascript
+console.log("Start cooking");
+
+setTimeout(() => {
+  console.log("Dish 1 done! (after 2 seconds)");
+}, 2000);
+
+setTimeout(() => {
+  console.log("Dish 2 done! (after 1 second)");
+}, 1000);
+
+console.log("Continue doing other things...");
+
+setTimeout(() => {
+  console.log("Dish 3 done! (after 3 seconds)");
+}, 3000);
+
+console.log("All dishes started!");
+```
+
+**Explanation**:
+- `setTimeout` is an example of an asynchronous operation. It schedules a task (in this case, printing a message) to be executed after a specified time.
+- The program doesn't wait for each `setTimeout` to finish. Instead, it schedules all the tasks and continues executing other code.
+
+---
+
+## Understanding Promises
+
+### What is a Promise?
+
+A **Promise** in JavaScript is an object that represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+
+### Explanation: Eventual Completion or Failure
+- **Eventual Completion**: The asynchronous operation completes successfully, and the Promise is said to be **fulfilled**. This means the operation has produced a result.
+- **Failure**: The asynchronous operation encounters an error or fails to complete, and the Promise is **rejected**. This means the operation did not succeed, and an error is produced.
+
+### The Promise Lifecycle
+
+A Promise can be in one of three states:
+1. **Pending**: The initial state, when the Promise is neither fulfilled nor rejected.
+2. **Fulfilled**: The operation completed successfully, and the Promise has a resulting value.
+3. **Rejected**: The operation failed, and the Promise has a reason for the failure (an error).
+
+### Diagram: Promise Lifecycle
+
+```plaintext
+Start
+  |
+Pending  -----> Fulfilled (operation completed) -----> Final Value
+  |                                               
+  ------> Rejected (operation failed) -------> Error/Reason
+```
+
+### Example Code: Creating a Promise
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+  const success = true; // Simulating success or failure
+
+  if (success) {
+    resolve("The operation was successful!"); // Move to "fulfilled"
+  } else {
+    reject("The operation failed."); // Move to "rejected"
+  }
+});
+
+// Handling the Promise
+promise
+  .then((result) => {
+    console.log(result); // "The operation was successful!"
+  })
+  .catch((error) => {
+    console.error(error); // "The operation failed."
+  });
+```
+
+### Breakdown and Explanation:
+
+- **`new Promise((resolve, reject) => { ... })`**: This creates a new Promise object. Inside the Promise, you define the asynchronous operation.
+  - **`resolve`**: A function that you call when the operation succeeds, changing the Promise's state to "fulfilled."
+  - **`reject`**: A function that you call when the operation fails, changing the Promise's state to "rejected."
+
+- **`.then(result => { ... })`**: This method is called when the Promise is fulfilled. It receives the value passed to `resolve`.
+  
+- **`.catch(error => { ... })`**: This method is called when the Promise is rejected. It receives the error passed to `reject`.
+
+### Example: Asynchronous Operation with Promises
+
+Let's revisit the e-commerce example using Promises:
+
+```javascript
+const createOrder = (cart) => {
+  return new Promise((resolve, reject) => {
+    console.log("Processing order...");
+    setTimeout(() => {
+      const orderId = "12345"; // Assume this is the generated order ID
+      console.log("Order created with ID:", orderId);
+      resolve(orderId); // Fulfill the promise with the order ID
+    }, 2000); // Simulate 2 seconds delay
+  });
+};
+
+const proceedToPayment = (orderId) => {
+  return new Promise((resolve, reject) => {
+    console.log("Processing payment...");
+    setTimeout(() => {
+      const paymentInfo = "Payment successful"; // Payment process completed
+      console.log("Payment processed for order ID:", orderId);
+      resolve(paymentInfo); // Fulfill the promise with payment information
+    }, 1000); // Simulate 1 second delay
+  });
+};
+
+const showOrderSummary = (paymentInfo) => {
+  return new Promise((resolve, reject) => {
+    console.log("Showing order summary...");
+    setTimeout(() => {
+      console.log("Order summary shown:", paymentInfo);
+      resolve(); // Resolve without value, just to indicate completion
+    }, 500); // Simulate 0.5 seconds delay
+  });
+};
+
+// Using Promises
+createOrder(["shoes", "pants", "kurta"])
+  .then((orderId) => proceedToPayment(orderId))
+  .then((paymentInfo) => showOrderSummary(paymentInfo))
+  .then(() => console.log("Order process completed successfully!"))
+  .catch((error) => console.error("Order process failed:", error));
+```
+
+### Explanation and State Changes:
+
+1. **`createOrder(["shoes", "pants", "kurta"])`**:
+   - The Promise is created and initially in the **Pending** state.
+   - After 2 seconds, the operation is completed, and the Promise moves to the **Fulfilled** state with the `orderId`.
+
+2. **`.then((orderId) => proceedToPayment(orderId))`**:
+   - The `orderId` from the first Promise is passed to `proceedToPayment`.
+   - This creates another Promise, initially in the **Pending** state.
+   - After 1 second, the payment is processed, and the Promise moves to the **Fulfilled** state with `paymentInfo`.
+
+3. **`.then((paymentInfo) => showOrderSummary(paymentInfo))`**:
+   - The `paymentInfo` is passed to `showOrderSummary`.
+   - This creates a final Promise, initially in the **Pending** state.
+   - After 0.5 seconds, the order summary is shown, and the Promise moves to the **Fulfilled** state.
+
+4. **`.catch((error) => console.error("Order process failed:", error))`**:
+   - If any of the Promises are rejected at any point, the error handling block catches it and logs the error.
+
+### Diagram: Promise Chaining
+
+```plaintext
+createOrder -----> (fulfilled) -----> proceedToPayment -----> (fulfilled) -----> showOrderSummary -----> (fulfilled)
+  |                      |                      |                        |                        |
+  |                      +--> (rejected)        |                        +--> (rejected)          +--> (rejected)
+  +--> (rejected)                                                        
+```
+
+### Detailed Code Explanation:
+
+- **Promises** help in managing the flow of asynchronous operations by ensuring each step is completed before moving to the next.
+- **State Transitions**: The Promise moves from `Pending` to either `Fulfilled` or `Rejected` based on the outcome of the asynchronous operation.
+- **Promise Chaining**: You can chain `.then()` methods to execute asynchronous operations in sequence. Each `.then()` receives the result of the previous operation.
+- **Error Handling**: The `.catch()` method provides a way to handle errors that may occur during any of the asynchronous operations in the chain.
+
+### Summary
+
+- **Asynchronous operations** allow JavaScript to perform tasks like network requests without blocking the main thread
+
+-----
+-----
+
 # Episode 21 : Promises
 
 > Promises are used to handle async operations in JavaScript.
@@ -183,3 +414,218 @@ Watch Live On Youtube below:
 
 <a href="https://www.youtube.com/watch?v=ap-6PPAuK1Y&list=PLlasXeu85E9eWOpw9jxHOQyGMRiBZ60aX&index=3&ab_channel=AkshaySaini" target="_blank"><img src="https://img.youtube.com/vi/ap-6PPAuK1Y/0.jpg" width="750"
 alt="promise in Javascript Youtube Link"/></a>
+
+
+-----
+
+Yes, Java also supports asynchronous programming, though the mechanisms are different from JavaScript. Asynchronous operations in Java allow you to perform tasks like file I/O, network requests, or computations in the background without blocking the main thread. This is especially useful in applications that need to remain responsive, like GUI applications, servers, or any application where tasks might take an unpredictable amount of time to complete.
+
+### Asynchronous Programming in Java
+
+#### Traditional Approach: Using Threads
+
+In Java, the traditional way to perform asynchronous tasks is by using threads. A thread is a lightweight process that can run concurrently with other threads.
+
+**Example:**
+
+```java
+public class AsyncExample {
+    public static void main(String[] args) {
+        System.out.println("Main thread starts");
+
+        // Creating a new thread to run an asynchronous task
+        Thread thread = new Thread(() -> {
+            try {
+                // Simulate a long-running task
+                Thread.sleep(2000);
+                System.out.println("Asynchronous task completed");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start(); // Start the asynchronous task
+
+        System.out.println("Main thread continues");
+
+        try {
+            thread.join(); // Wait for the asynchronous task to complete
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Main thread ends");
+    }
+}
+```
+
+**Explanation:**
+- **`Thread`**: We create a new thread and pass a `Runnable` (a task to be executed) to its constructor.
+- **`thread.start()`**: This starts the new thread, which runs the task asynchronously.
+- **`thread.join()`**: This makes the main thread wait for the asynchronous task to finish.
+
+### Modern Approach: Using `CompletableFuture`
+
+Java 8 introduced `CompletableFuture`, which is a powerful tool for asynchronous programming. It allows you to write non-blocking code and handle asynchronous tasks more elegantly than using threads directly.
+
+**Example:**
+
+```java
+import java.util.concurrent.CompletableFuture;
+
+public class CompletableFutureExample {
+    public static void main(String[] args) {
+        System.out.println("Main thread starts");
+
+        // Asynchronous task using CompletableFuture
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            try {
+                // Simulate a long-running task
+                Thread.sleep(2000);
+                System.out.println("Asynchronous task completed");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        // Continue with other tasks
+        System.out.println("Main thread continues");
+
+        // Block and wait for the future to complete
+        future.join();
+
+        System.out.println("Main thread ends");
+    }
+}
+```
+
+**Explanation:**
+- **`CompletableFuture.runAsync()`**: Executes a task asynchronously without blocking the main thread.
+- **`future.join()`**: Blocks the main thread until the asynchronous task is completed.
+
+### More Complex Example: Asynchronous Computation
+
+Let's say you want to perform two independent asynchronous computations and then combine their results.
+
+**Example:**
+
+```java
+import java.util.concurrent.CompletableFuture;
+
+public class AsyncComputationExample {
+    public static void main(String[] args) {
+        System.out.println("Starting asynchronous computations...");
+
+        // First asynchronous computation
+        CompletableFuture<Integer> future1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 10;
+        });
+
+        // Second asynchronous computation
+        CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 20;
+        });
+
+        // Combine results of both computations
+        CompletableFuture<Integer> combinedFuture = future1.thenCombine(future2, (result1, result2) -> result1 + result2);
+
+        // Block and get the result of the combined computation
+        int combinedResult = combinedFuture.join();
+
+        System.out.println("Combined Result: " + combinedResult);
+    }
+}
+```
+
+**Explanation:**
+- **`CompletableFuture.supplyAsync()`**: Used for tasks that return a result. Each computation runs asynchronously.
+- **`thenCombine()`**: Combines the results of two independent asynchronous tasks once both are completed.
+- **`join()`**: Blocks the main thread until the combined result is ready.
+
+### Asynchronous Operations in Java
+
+- **I/O Operations**: Java's `java.nio` package provides non-blocking I/O operations, allowing you to perform file or network I/O asynchronously.
+- **Asynchronous Servlets**: In Java EE, you can use asynchronous servlets to handle long-running tasks without blocking the servlet's thread pool.
+- **Executors**: The `ExecutorService` in Java provides a higher-level API for managing threads and tasks, supporting both synchronous and asynchronous task execution.
+
+### Asynchronous vs Synchronous in Java
+
+- **Synchronous**: Methods execute in a sequence, and each method must complete before the next one starts.
+- **Asynchronous**: Methods start tasks that run in parallel to other tasks, allowing the program to continue running other tasks without waiting for the current task to complete.
+
+### Lifecycle of a CompletableFuture (Similar to Promise in JavaScript)
+
+- **Pending**: The `CompletableFuture` is created but not yet completed.
+- **Completed**: The task has finished, and the result (or exception) is available.
+
+**States**:
+1. **Pending**: When the `CompletableFuture` is still running or waiting for the task to complete.
+2. **Completed**: When the task is done, either successfully (fulfilled) or with an exception (rejected).
+
+### Example: Full Lifecycle of CompletableFuture
+
+```java
+import java.util.concurrent.CompletableFuture;
+
+public class CompletableFutureLifecycleExample {
+    public static void main(String[] args) {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+            System.out.println("Processing task...");
+            try {
+                Thread.sleep(2000); // Simulate a long-running task
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "Task result";
+        });
+
+        // Attach a callback to be called upon completion
+        future.thenAccept(result -> {
+            System.out.println("Received result: " + result);
+        });
+
+        // Attach a callback to handle any errors
+        future.exceptionally(ex -> {
+            System.out.println("Error occurred: " + ex.getMessage());
+            return null;
+        });
+
+        System.out.println("Main thread continues...");
+
+        // Block until the future completes
+        future.join();
+
+        System.out.println("Main thread ends.");
+    }
+}
+```
+
+**Explanation:**
+- **`supplyAsync()`**: Asynchronously runs the provided task.
+- **`thenAccept()`**: Attaches a callback that executes when the task is completed successfully.
+- **`exceptionally()`**: Attaches a callback to handle any exceptions that may occur during the task's execution.
+- **`join()`**: Blocks the main thread until the asynchronous task is completed.
+
+### Visual Representation: CompletableFuture Lifecycle
+
+```plaintext
+Start
+  |
+Pending -----> (Success) -----> Fulfilled (Result: "Task result")
+  |                       
+  -----> (Error) -----> Rejected (Error: "Some error occurred")
+```
+
+### Conclusion
+
+Java provides robust mechanisms for asynchronous programming, from traditional thread management to modern, flexible approaches like `CompletableFuture`. Asynchronous operations in Java allow programs to be more responsive and efficient by not blocking the main thread while waiting for tasks to complete.

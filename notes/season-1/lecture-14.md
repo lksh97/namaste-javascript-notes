@@ -18,7 +18,7 @@ setTimeout(function () {
     console.log("x");
     y();
   }
-  x(function y() {
+  x(function y() { 
     console.log("y");
   });
   // x y timer
