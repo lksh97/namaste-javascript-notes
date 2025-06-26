@@ -1,55 +1,89 @@
 # Episode 18: Higher-Order Functions ft. Functional Programming
 
-### Q: What is a Higher-Order Function?
-**Ans**: A higher-order function is a function that does one or both of the following:
-1. **Takes one or more functions as arguments**: This allows the function to dynamically decide what operation to perform based on the function passed to it.
-2. **Returns a function as its result**: This enables the creation of more complex and reusable code.
+## Higher-Order Function Kya Hota Hai?
 
-**Example**:
+**Answer:**  
+Higher-order function woh function hota hai jo ya toh:  
+1. **Ek ya zyada functions ko argument ke roop mein leta hai:**  
+    - Isse aap dynamically decide kar sakte ho ki function ko kaunsa operation perform karna hai, based on jo function pass kiya gaya hai.  
+2. **Ek function return karta hai:**  
+    - Isse complex aur reusable code likhna asaan ho jata hai.
+
+**Example:**
+
 ```js
+// Ek simple function jo "Hi" print karta hai.
 function sayHello() {
     console.log("Hi");
-};
+}
 
+// Ek higher-order function jo ek function ko argument ke roop me leta hai aur use execute karta hai.
 function executeFunction(fn) {
     fn();
-};
+}
 
 executeFunction(sayHello); // Output: Hi
-// executeFunction is a higher-order function because it takes another function (sayHello) as an argument.
-// sayHello is a callback function.
-```
 
-### Q: What is a Callback Function?
-**Ans**: A callback function is a function that is passed as an argument to another function and is executed inside that function. It allows you to defer actions until a certain condition is met or an event occurs.
+// Yahan, executeFunction ek higher-order function hai kyunki yeh ek function (sayHello) ko argument ke roop mein leta hai.
+// Aur sayHello ek callback function hai.
 
-**Example**:
-```js
+Callback Function Kya Hota Hai?
+
+Answer:
+Callback function woh function hota hai jo kisi aur function ko argument ke roop mein pass kiya jata hai aur us function ke andar call hota hai.
+Isse aap koi action defer kar sakte ho jab tak koi condition satisfy na ho jaye ya koi event na ho.
+
+Example:
+
+// Ek greet function jo naam ke saath greeting print karta hai.
 function greet(name) {
     console.log("Hello, " + name);
 }
 
+// processUserInput function, jo ek callback function leta hai.
 function processUserInput(callback) {
     const name = "Alice";
     callback(name);
 }
 
 processUserInput(greet); // Output: Hello, Alice
-// Here, greet is a callback function because it is passed to processUserInput and is executed later.
-```
 
-### Applying Higher-Order Functions in Problem Solving
+// Yahan, greet ek callback function hai kyunki isse processUserInput function ko argument ke roop me diya gaya hai aur later call kiya gaya hai.
 
-Let's explore how higher-order functions can be useful in solving real-world problems, such as calculating values based on an array of data.
+Applying Higher-Order Functions in Problem Solving
 
-### Scenario: Calculating Area and Circumference
+Higher-order functions real-world problems solve karne mein kaafi useful hote hain.
+Chaliye dekhte hain kaise aap ek array ke data ke saath operations apply kar sakte hain, jaise ki area aur circumference calculate karna.
 
-Suppose you have an array of radii, and you need to calculate the area for each radius and store the results in a new array. Here's one way to do it:
+Scenario: Calculating Area and Circumference
 
-**First Approach**:
-```js
+Suppose:
+Aapke paas ek array hai radii ka, aur aapko har radius ke liye area calculate karna hai aur results ko ek nayi array mein store karna hai.
+
+Text Diagram
+
+          +----------------+
+          |  radiusArr     |     // [1, 2, 3, 4]
+          +----------------+
+                   |
+                   v
+          +------------------+          +--------------------+
+          | Higher-Order     |  ------> | Operation (area)   |
+          | Function         |          +--------------------+
+          | calculate()      |          | Operation (circumference) |
+          +------------------+          +--------------------+
+                   |
+                   v
+          +------------------+
+          |  Output Array    |   // [calculated values]
+          +------------------+
+
+First Approach (Without Higher-Order Function)
+
+// Array of radii
 const radius = [1, 2, 3, 4];
 
+// Calculate area without using higher-order functions
 const calculateArea = function(radius) {
     const output = [];
     for (let i = 0; i < radius.length; i++) {
@@ -58,13 +92,10 @@ const calculateArea = function(radius) {
     return output;
 }
 
-console.log(calculateArea(radius)); // Output: [3.14, 12.57, 28.27, 50.27]
-```
-This works fine, but what if you now need to calculate the circumference as well? You would end up duplicating a lot of code:
+console.log(calculateArea(radius)); // Expected Output: [3.14, 12.57, 28.27, 50.27]
 
-**Second Approach**:
-```js
-const radius = [1, 2, 3, 4];
+	Note:
+Yeh solution sahi hai lekin agar aapko circumference bhi calculate karna ho, toh aapko alag se code likhna padega.
 
 const calculateCircumference = function(radius) {
     const output = [];
@@ -74,55 +105,86 @@ const calculateCircumference = function(radius) {
     return output;
 }
 
-console.log(calculateCircumference(radius)); // Output: [6.28, 12.57, 18.85, 25.13]
-```
-However, this violates the DRY (Don't Repeat Yourself) principle. Instead, let's refactor the code using a higher-order function:
+console.log(calculateCircumference(radius)); // Expected Output: [6.28, 12.57, 18.85, 25.13]
 
-**Better Approach Using Higher-Order Functions**:
-```js
+	Problem:
+Yeh do alag functions likhne se DRY (Don’t Repeat Yourself) principle violate hota hai.
+
+Better Approach Using Higher-Order Functions
+
+Is approach mein hum ek higher-order function banayenge jo kisi bhi operation (function) ko array ke har element par apply karega. Isse code repeat nahi karna padega.
+
+// Array of radii
 const radiusArr = [1, 2, 3, 4];
 
-// Function to calculate area
+// Function to calculate area (πr²)
+const area = function(radius) {
+    // Yeh function input radius se area calculate karta hai.
+    return Math.PI * radius * radius;
+}
+
+// Function to calculate circumference (2πr)
+const circumference = function(radius) {
+    // Yeh function input radius se circumference calculate karta hai.
+    return 2 * Math.PI * radius;
+}
+
+// Higher-order function jo kisi bhi operation ko array ke har element par apply karta hai.
+const calculate = function(radiusArr, operation) {
+    const output = [];
+    // Har element par operation apply karo.
+    for (let i = 0; i < radiusArr.length; i++) {
+        output.push(operation(radiusArr[i])); // Operation call ho raha hai.
+    } 
+    return output;
+}
+
+console.log(calculate(radiusArr, area));          // Expected Output: [3.14, 12.57, 28.27, 50.27]
+console.log(calculate(radiusArr, circumference)); // Expected Output: [6.28, 12.57, 18.85, 25.13]
+
+// Yahan, 'calculate' ek higher-order function hai jo kisi bhi function (area ya circumference) ko callback ke roop mein leta hai.
+
+Detailed Code Comments in Hinglish:
+
+// radiusArr: Ek array jo different radii ko store karta hai.
+const radiusArr = [1, 2, 3, 4];
+
+// area function: Yeh function radius ka use karke area calculate karta hai.
+// Formula: π * r * r
 const area = function(radius) {
     return Math.PI * radius * radius;
 }
 
-// Function to calculate circumference
+// circumference function: Yeh function radius ka use karke circumference calculate karta hai.
+// Formula: 2 * π * r
 const circumference = function(radius) {
     return 2 * Math.PI * radius;
 }
 
-// Higher-order function that applies any operation to each element in the array
+// calculate function: Higher-order function jo array ke har element par di gayi operation apply karta hai.
 const calculate = function(radiusArr, operation) {
     const output = [];
+    // Loop chala ke har element par operation apply karo.
     for (let i = 0; i < radiusArr.length; i++) {
-        output.push(operation(radiusArr[i]));
+        output.push(operation(radiusArr[i])); // Yahan, area ya circumference function call hota hai.
     } 
     return output;
 }
 
-console.log(calculate(radiusArr, area)); // Output: [3.14, 12.57, 28.27, 50.27]
+// calculate function ka use karke results print karna.
+console.log(calculate(radiusArr, area));          // Output: [3.14, 12.57, 28.27, 50.27]
 console.log(calculate(radiusArr, circumference)); // Output: [6.28, 12.57, 18.85, 25.13]
 
-// Here, calculate is a higher-order function because it takes another function (operation) as an argument.
-// area and circumference are callback functions.
-```
-By using higher-order functions, you make your code more modular, reusable, and easier to maintain.
+Polyfill for the map Function
 
-### Polyfill for `map` Function
+calculate function built-in map function ke jaisa hi hai.
+map function array ke har element par ek function apply karke ek nayi array return karta hai.
 
-In fact, the `calculate` function above is very similar to how JavaScript's built-in `map` function works. The `map` function applies a given operation to every element in an array and returns a new array.
+Example:
 
-**Example**:
-```js
-console.log(radiusArr.map(area)); // Output: [3.14, 12.57, 28.27, 50.27]
-// This is functionally the same as:
-console.log(calculate(radiusArr, area));
-```
+console.log(radiusArr.map(area)); // Expected Output: [3.14, 12.57, 28.27, 50.27]
 
-You can even create a custom `map` function by extending the `Array` prototype:
-
-```js
+// Custom map function create karne ke liye:
 Array.prototype.calculate = function(operation) {
     const output = [];
     for (let i = 0; i < this.length; i++) {
@@ -131,145 +193,97 @@ Array.prototype.calculate = function(operation) {
     return output;
 }
 
-console.log(radiusArr.calculate(area)); // Output: [3.14, 12.57, 28.27, 50.27]
+console.log(radiusArr.calculate(area)); // Expected Output: [3.14, 12.57, 28.27, 50.27]
+
+Quick Recap with Diagram
+
+Diagram:
+
+          [1, 2, 3, 4]  <-- radiusArr
+                |
+                v
+         +--------------+      apply operation (area / circumference)
+         | calculate()  |  -------------------------->
+         +--------------+      
+                |
+                v
+         [calculated values]   <-- Output Array
+
+Detailed Code Comments (Recap):
+	•	radiusArr: Array of radii.
+	•	area function: Calculates area using formula π * r * r.
+	•	circumference function: Calculates circumference using formula 2 * π * r.
+	•	calculate function: A higher-order function that applies a given operation (area or circumference) to each element in radiusArr and returns a new array of results.
+	•	Built-in map: JavaScript’s built-in map function does the same, so our custom calculate function mimics that behavior.
+
+Conclusion
+
+Higher-order functions aur callback functions se aap apna code modular, reusable, aur maintainable bana sakte ho. Is approach se aap complex operations ko simplify karke easily test aur debug kar sakte ho.
+
+Watch Live on YouTube:
 ```
 
-### Additional Points:
-1. **Functional Programming**: In functional programming, functions are treated as first-class citizens. This means you can pass functions around as arguments, return them from other functions, and assign them to variables.
 
-2. **Immutability**: Functional programming often emphasizes immutability, where data is not modified but instead new data is created. This makes your code more predictable and easier to debug.
+-------
 
-3. **Pure Functions**: A pure function is one that, given the same input, will always return the same output and has no side effects. Higher-order functions often rely on pure functions to maintain consistency.
+# Jist Episode 18: Higher-Order Functions aur Functional Programming ka Maza
 
-4. **Real-World Example**: Consider an e-commerce website where you need to apply different discount calculations to various products. Using higher-order functions, you can create a `calculatePrice` function that takes a product array and a discount function as arguments, applying the discount dynamically based on the function provided.
+### Q: Higher-Order Function kya hota hai?
+**Ans**: Higher-order function ek aisa function hota hai jo:
+1. **Doosre functions ko argument ke taur pe leta hai**: Isse function dynamically decide kar sakta hai ki kya operation perform karna hai.
+2. **Ya phir ek function ko result ke taur pe return karta hai**: Isse complex aur reusable code banaya ja sakta hai.
 
 **Example**:
 ```js
-const products = [
-    { name: "Laptop", price: 1000 },
-    { name: "Phone", price: 500 }
-];
-
-const tenPercentDiscount = function(price) {
-    return price * 0.9;
-}
-
-const calculatePrice = function(products, discountFn) {
-    return products.map(product => {
-        return {
-            name: product.name,
-            price: discountFn(product.price)
-        };
-    });
-}
-
-console.log(calculatePrice(products, tenPercentDiscount));
-// Output: [{ name: "Laptop", price: 900 }, { name: "Phone", price: 450 }]
-```
-
-By understanding and using higher-order functions and callback functions effectively, you can write more flexible, reusable, and maintainable JavaScript code.
-
----
-
-Watch Live On YouTube below:
-
-<a href="https://www.youtube.com/watch?v=HkWxvB1RJq0&ab_channel=AkshaySaini" target="_blank"><img src="https://img.youtube.com/vi/HkWxvB1RJq0/0.jpg" width="750"
-alt="Higher-Order Functions ft. Functional Programming in JS YouTube Link"/></a>
-
------
-
-# Episode 18 : Higher-Order Functions ft. Functional Programming
-
-### Q: What is Higher Order Function?
-**Ans**: Higher-order functions are regular functions that take one or more functions as arguments and/or return functions as a value from it. Eg: 
-```js
-function x() {
-    console.log("Hi");
+function namaste() {
+    console.log("Namaste ji!");
 };
-function y(x) {
-    x();
+
+function functionChalao(kuchBhiFunction) {
+    kuchBhiFunction();
 };
-y(x); // Hi
-// y is a higher order function
-// x is a callback function
+
+functionChalao(namaste); // Output: Namaste ji!
+// functionChalao ek higher-order function hai kyunki ye doosre function (namaste) ko argument ke taur pe le raha hai.
+// namaste ek callback function hai.
 ```
 
-Let's try to understand how we should approach solution in interview.
-I have an array of radius and I have to calculate area using these radius and store in an array.
+### Q: Callback Function kya hota hai?
+**Ans**: Callback function wo function hota hai jo doosre function ko argument ke taur pe pass kiya jata hai aur baad mein execute hota hai. Isse aap kisi action ko tab tak delay kar sakte hain jab tak koi condition meet na ho jaye ya koi event na ho jaye.
 
-First Approach:
+**Example**:
 ```js
-const radius = [1, 2, 3, 4];
-const calculateArea = function(radius) {
-    const output = [];
+function swagat(naam) {
+    console.log("Namaste, " + naam + " ji!");
+}
+
+function userKaNaamLo(callback) {
+    const naam = "Rajesh";
+    callback(naam);
+}
+
+userKaNaamLo(swagat); // Output: Namaste, Rajesh ji!
+// Yahan pe, swagat ek callback function hai kyunki ye userKaNaamLo ko pass kiya gaya hai aur baad mein execute hota hai.
+```
+
+### Real Life Mein Higher-Order Functions Ka Use
+
+Chalo dekhte hain ki real life mein higher-order functions kaise useful ho sakte hain. Maan lo humein ek array mein se har radius ke liye area nikalna hai.
+
+**Pehla Tareeka**:
+```js
+const radius = [3, 1, 2, 4];
+
+const areaNikalo = function(radius) {
+    const result = [];
     for (let i = 0; i < radius.length; i++) {
-        output.push(Math.PI * radius[i] * radius[i]);
+        result.push(Math.PI * radius[i] * radius[i]);
     } 
-    return output;
-}
-console.log(calculateArea(radius));
-```
-The above solution works perfectly fine but what if we have now requirement to calculate array of circumference. Code now be like
-```js
-const radius = [1, 2, 3, 4];
-const calculateCircumference = function(radius) {
-    const output = [];
-    for (let i = 0; i < radius.length; i++) {
-        output.push(2 * Math.PI * radius[i]);
-    } 
-    return output;
-}
-console.log(calculateCircumference(radius));
-```
-But over here we are violating some principle like DRY Principle, now lets observe the better approach.
-```js
-const radiusArr = [1, 2, 3, 4];
-
-// logic to calculate area
-const area = function (radius) {
-    return Math.PI * radius * radius;
+    return result;
 }
 
-// logic to calculate circumference
-const circumference = function (radius) {
-    return 2 * Math.PI * radius;
-}
-
-const calculate = function(radiusArr, operation) {
-    const output = [];
-    for (let i = 0; i < radiusArr.length; i++) {
-        output.push(operation(radiusArr[i]));
-    } 
-    return output;
-}
-console.log(calculate(radiusArr, area));
-console.log(calculate(radiusArr, circumference));
-// Over here calculate is HOF
-// Over here we have extracted logic into separate functions. This is the beauty of functional programming.
-
-Polyfill of map
-// Over here calculate is nothing but polyfill of map function
-// console.log(radiusArr.map(area)) == console.log(calculate(radiusArr, area));
-
-***************************************************
-Lets convert above calculate function as map function and try to use. So,
-
-Array.prototype.calculate = function(operation) {
-    const output = [];
-    for (let i = 0; i < this.length; i++) {
-        output.push(operation(this[i]));
-    } 
-    return output;
-}
-console.log(radiusArr.calculate(area))
+console.log(areaNikalo(radius)); // Output: [28.27, 3.14, 12.57, 50.27]
+// Ye sahi kaam kar raha hai, lekin agar humein ab circumference bhi nikalna ho to?
 ```
 
-
-
-
-<hr>
-
-Watch Live On Youtube below:
-
-<a href="https://www.youtube.com/watch?v=HkWxvB1RJq0&ab_channel=AkshaySaini" target="_blank"><img src="https://img.youtube.com/vi/HkWxvB1RJq0/0.jpg" width="750"
-alt="Higher-Order Functions ft. Functional Programming in JS Youtube Link"/></a>
+**Doosra Tareeka (Higher-Order Function Ka Use Karke)**:
