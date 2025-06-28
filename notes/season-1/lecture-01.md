@@ -129,6 +129,7 @@ function sayHello() {
     console.log("Hello");
 }
 sayHello();
+```
 
 Execution Context Breakdown
 
